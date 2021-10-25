@@ -15,12 +15,13 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   var minValueController = TextEditingController();
   var maxValueController = TextEditingController();
-  var currentColor = Colors.yellow;
 
   @override
   Widget build(BuildContext context) {
     minValueController.text = Provider.of<Data>(context).min.toString();
     maxValueController.text = Provider.of<Data>(context).max.toString();
+
+    var currentColor = Provider.of<Data>(context).appMainColor;
 
     return SafeArea(
       child: Scaffold(

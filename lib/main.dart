@@ -29,10 +29,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
   @override
   Widget build(BuildContext context) {
+    var currentColor = Provider.of<Data>(context).appMainColor;
+
     return SafeArea(
       child: Scaffold(
         drawer: Drawer(
@@ -68,23 +68,123 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Row(
               // ignore: prefer_const_literals_to_create_immutables
               ),
-          backgroundColor: Colors.transparent,
+          backgroundColor: currentColor,
           elevation: 0,
         ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Consumer<Data>(builder: (context, data, child) {
-                return Text(
-                  data.currentNumber.toString(),
-                  style: Theme.of(context).textTheme.headline4,
-                );
-              })
+              Expanded(
+                flex: 2,
+                child: Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                      color: currentColor,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      )),
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    children: [
+                      Center(
+                        child: Consumer<Data>(
+                          builder: (context, data, child) {
+                            return Text(
+                              data.currentNumber.toString(),
+                              style: Theme.of(context).textTheme.headline4,
+                            );
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: 200,
+                        child: Center(
+                          child: CheckboxListTile(
+                            title: Text(
+                              "Do not repeat",
+                              style: Theme.of(context).textTheme.bodyText1,
+                            ),
+                            controlAffinity: ListTileControlAffinity.leading,
+                            checkColor: Provider.of<Data>(context).appMainColor,
+                            activeColor: Colors.white,
+                            onChanged: (value) {
+                              Provider.of<Data>(
+                                context,
+                                listen: false,
+                              ).norepeat = value!;
+                            },
+                            value: Provider.of<Data>(context).norepeat,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        child: Center(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              shadowColor: Colors.black,
+                              enableFeedback: true,
+                            ),
+                            onPressed: Provider.of<Data>(
+                              context,
+                              listen: false,
+                            ).resetNumbers,
+                            child: Text(
+                              "Reset Numbers",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 7,
+                child: Container(
+                    child: Consumer<Data>(builder: (context, data, child) {
+                  List<Widget> radomNumers = [];
+
+                  for (int number in data.allNumbers.reversed) {
+                    radomNumers.add(Card(
+                      color: data.appMainColor,
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(color: Colors.white70, width: 1),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Container(
+                        padding: EdgeInsets.all(20),
+                        child: Text(
+                          number.toString(),
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                      ),
+                    ));
+                    // Container(
+                    //   margin: EdgeInsets.all(5),
+                    //   padding: EdgeInsets.all(20),
+                    //   decoration: BoxDecoration(
+                    //       color: data.appMainColor,
+                    //       borderRadius: BorderRadius.circular(20)),
+                    //   child: Text(
+                    //     number.toString(),
+                    //     style: Theme.of(context).textTheme.bodyText1,
+                    //   ),
+                    // ));
+                  }
+
+                  return ListView(children: radomNumers);
+                })),
+              ),
             ],
           ),
         ),
         floatingActionButton: FloatingActionButton(
+          backgroundColor: currentColor,
           onPressed: () {
             Provider.of<Data>(context, listen: false).newRandom();
           },
@@ -106,14 +206,16 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
-    var mainAppColor = Provider.of<Data>(context).appMainColor;
     var mainBgColor = Colors.grey.shade800;
 
     return MaterialApp(
       title: 'Random Numbers',
       theme: ThemeData(
         cardColor: Colors.white,
-        primarySwatch: Colors.red,
+        primaryColor: Provider.of<Data>(context).appMainColor,
+        appBarTheme: AppBarTheme(
+          color: Provider.of<Data>(context).appMainColor,
+        ),
         backgroundColor: mainBgColor,
         scaffoldBackgroundColor: mainBgColor,
         dialogBackgroundColor: mainBgColor,
@@ -124,7 +226,10 @@ class _MainPageState extends State<MainPage> {
             bodyText2: TextStyle(
               color: Colors.white,
             )),
-        inputDecorationTheme: InputDecorationTheme(),
+        inputDecorationTheme: InputDecorationTheme(
+          focusColor: Provider.of<Data>(context).appMainColor,
+          hoverColor: Provider.of<Data>(context).appMainColor,
+        ),
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
