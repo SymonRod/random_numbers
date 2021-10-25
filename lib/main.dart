@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'package:provider/provider.dart';
+import 'package:random_numbers/models/data.dart';
+import 'package:random_numbers/screen/settings.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,21 +14,26 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     var mainBgColor = Colors.grey.shade800;
 
-    return MaterialApp(
-      title: 'Random Numbers',
-      theme: ThemeData(
-        cardColor: Colors.white,
-        primarySwatch: Colors.red,
-        backgroundColor: mainBgColor,
-        scaffoldBackgroundColor: mainBgColor,
-        dialogBackgroundColor: mainBgColor,
-        iconTheme: IconThemeData(size: 30.0, color: Colors.white),
-        textTheme: TextTheme(
-          headline4: TextStyle(color: Colors.white),
-          bodyText1: TextStyle(color: Colors.white),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => Data()),
+      ],
+      child: MaterialApp(
+        title: 'Random Numbers',
+        theme: ThemeData(
+          cardColor: Colors.white,
+          primarySwatch: Colors.red,
+          backgroundColor: mainBgColor,
+          scaffoldBackgroundColor: mainBgColor,
+          dialogBackgroundColor: mainBgColor,
+          iconTheme: IconThemeData(size: 30.0, color: Colors.white),
+          textTheme: TextTheme(
+            headline4: TextStyle(color: Colors.white),
+            bodyText1: TextStyle(color: Colors.white),
+          ),
         ),
+        home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
@@ -41,12 +48,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  var rand = Random();
-  void _incrementCounter() {
-    setState(() {
-      _counter = rand.nextInt(200);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,9 +64,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Container(),
               ),
               ListTile(
-                leading: Icon(
-                  Icons.settings,
-                  color: Theme.of(context).cardColor,
+                onTap: () {
+                  Navigator.push((context),
+                      new MaterialPageRoute(builder: (ctxt) => new Settings()));
+                },
+                leading: GestureDetector(
+                  child: Icon(
+                    Icons.settings,
+                    color: Theme.of(context).cardColor,
+                  ),
                 ),
                 title: Text(
                   "Impostazioni",
@@ -77,9 +84,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         appBar: AppBar(
           title: Row(
-            // ignore: prefer_const_literals_to_create_immutables
-            children: [],
-          ),
+              // ignore: prefer_const_literals_to_create_immutables
+              ),
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
@@ -87,16 +93,20 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text(
-                '$_counter',
-                style: Theme.of(context).textTheme.headline4,
-              ),
+              Consumer<Data>(builder: (context, data, child) {
+                return Text(
+                  data.currentNumber.toString(),
+                  style: Theme.of(context).textTheme.headline4,
+                );
+              })
             ],
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: _incrementCounter,
-          tooltip: 'Increment',
+          onPressed: () {
+            Provider.of<Data>(context, listen: false).newRandom();
+          },
+          tooltip: 'New random number',
           child: const Icon(Icons.casino),
         ),
       ),
