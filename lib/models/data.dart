@@ -6,6 +6,7 @@ class Data with ChangeNotifier {
   int _max = 66;
   int _currentNumber = 0;
   final Random _random = Random();
+  Color _appMainColor = Colors.red;
 
   void newRandom() {
     var pool = _max - _min;
@@ -16,15 +17,21 @@ class Data with ChangeNotifier {
   int get currentNumber => _currentNumber;
   int get min => _min;
   int get max => _max;
+  Color get appMainColor => _appMainColor;
 
-  set max(newMax) {
+  set appMainColor(Color color) {
+    _appMainColor = color;
+    notifyListeners();
+  }
+
+  set max(int newMax) {
     if (newMax > _min) {
       _max = newMax;
       notifyListeners();
     }
   }
 
-  set min(newMin) {
+  set min(int newMin) {
     if (newMin < max) {
       _min = newMin;
       notifyListeners();

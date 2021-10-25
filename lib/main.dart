@@ -12,29 +12,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var mainBgColor = Colors.grey.shade800;
+    var mainBgColor = Colors.grey.shade700;
 
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => Data()),
-      ],
-      child: MaterialApp(
-        title: 'Random Numbers',
-        theme: ThemeData(
-          cardColor: Colors.white,
-          primarySwatch: Colors.red,
-          backgroundColor: mainBgColor,
-          scaffoldBackgroundColor: mainBgColor,
-          dialogBackgroundColor: mainBgColor,
-          iconTheme: IconThemeData(size: 30.0, color: Colors.white),
-          textTheme: TextTheme(
-            headline4: TextStyle(color: Colors.white),
-            bodyText1: TextStyle(color: Colors.white),
-          ),
-        ),
-        home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      ),
-    );
+    return MultiProvider(providers: [
+      ChangeNotifierProvider(create: (_) => Data()),
+    ], child: MainPage());
   }
 }
 
@@ -110,6 +92,41 @@ class _MyHomePageState extends State<MyHomePage> {
           child: const Icon(Icons.casino),
         ),
       ),
+    );
+  }
+}
+
+class MainPage extends StatefulWidget {
+  const MainPage({Key? key}) : super(key: key);
+
+  @override
+  _MainPageState createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  @override
+  Widget build(BuildContext context) {
+    var mainAppColor = Provider.of<Data>(context).appMainColor;
+    var mainBgColor = Colors.grey.shade800;
+
+    return MaterialApp(
+      title: 'Random Numbers',
+      theme: ThemeData(
+        cardColor: Colors.white,
+        primarySwatch: Colors.red,
+        backgroundColor: mainBgColor,
+        scaffoldBackgroundColor: mainBgColor,
+        dialogBackgroundColor: mainBgColor,
+        iconTheme: const IconThemeData(size: 30.0, color: Colors.white),
+        textTheme: const TextTheme(
+            headline4: TextStyle(color: Colors.white),
+            bodyText1: TextStyle(color: Colors.white, fontSize: 16),
+            bodyText2: TextStyle(
+              color: Colors.white,
+            )),
+        inputDecorationTheme: InputDecorationTheme(),
+      ),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
