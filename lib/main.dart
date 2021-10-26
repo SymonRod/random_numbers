@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:random_numbers/models/data.dart';
+import 'package:random_numbers/models/statemanager.dart';
 import 'package:random_numbers/screen/settings.dart';
 
 void main() {
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     var mainBgColor = Colors.grey.shade700;
 
     return MultiProvider(providers: [
-      ChangeNotifierProvider(create: (_) => Data()),
+      ChangeNotifierProvider(create: (_) => StateManager()),
     ], child: MainPage());
   }
 }
@@ -31,7 +31,51 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    var currentColor = Provider.of<Data>(context).appMainColor;
+    var currentColor = Provider.of<StateManager>(context).appMainColor;
+
+    _dismissDialog() {
+      Navigator.pop(context);
+    }
+
+    void _showMaterialDialog() async {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(
+                'You ran out of numbers!',
+                style: Theme.of(context).textTheme.headline5,
+              ),
+              content: Text(
+                'You can reset the list or do nothing about it.',
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    _dismissDialog();
+                    Provider.of<StateManager>(context, listen: false)
+                        .resetNumbers();
+                  },
+                  child: Text(
+                    'Reset Numbers',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    print('HelloWorld!');
+                    _dismissDialog();
+                  },
+                  child: Text(
+                    'Ok',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+              ],
+            );
+          });
+    }
 
     return SafeArea(
       child: Scaffold(
@@ -89,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     children: [
                       Center(
-                        child: Consumer<Data>(
+                        child: Consumer<StateManager>(
                           builder: (context, data, child) {
                             return Text(
                               data.currentNumber.toString(),
@@ -107,15 +151,16 @@ class _MyHomePageState extends State<MyHomePage> {
                               style: Theme.of(context).textTheme.bodyText1,
                             ),
                             controlAffinity: ListTileControlAffinity.leading,
-                            checkColor: Provider.of<Data>(context).appMainColor,
+                            checkColor:
+                                Provider.of<StateManager>(context).appMainColor,
                             activeColor: Colors.white,
                             onChanged: (value) {
-                              Provider.of<Data>(
+                              Provider.of<StateManager>(
                                 context,
                                 listen: false,
                               ).norepeat = value!;
                             },
-                            value: Provider.of<Data>(context).norepeat,
+                            value: Provider.of<StateManager>(context).norepeat,
                           ),
                         ),
                       ),
@@ -127,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               shadowColor: Colors.black,
                               enableFeedback: true,
                             ),
-                            onPressed: Provider.of<Data>(
+                            onPressed: Provider.of<StateManager>(
                               context,
                               listen: false,
                             ).resetNumbers,
@@ -144,8 +189,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               Expanded(
                 flex: 7,
-                child: Container(
-                    child: Consumer<Data>(builder: (context, data, child) {
+                child: Container(child:
+                    Consumer<StateManager>(builder: (context, data, child) {
                   List<Widget> radomNumers = [];
 
                   for (int number in data.allNumbers.reversed) {
@@ -164,21 +209,20 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                     ));
-                    // Container(
-                    //   margin: EdgeInsets.all(5),
-                    //   padding: EdgeInsets.all(20),
-                    //   decoration: BoxDecoration(
-                    //       color: data.appMainColor,
-                    //       borderRadius: BorderRadius.circular(20)),
-                    //   child: Text(
-                    //     number.toString(),
-                    //     style: Theme.of(context).textTheme.bodyText1,
-                    //   ),
-                    // ));
                   }
 
                   return ListView(children: radomNumers);
                 })),
+              ),
+              Consumer<StateManager>(
+                builder: (context, data, child) {
+                  if (data.noNumberLeft) {
+                    Future.delayed(Duration.zero, () async {
+                      _showMaterialDialog();
+                    });
+                  }
+                  return Container();
+                },
               ),
             ],
           ),
@@ -186,7 +230,7 @@ class _MyHomePageState extends State<MyHomePage> {
         floatingActionButton: FloatingActionButton(
           backgroundColor: currentColor,
           onPressed: () {
-            Provider.of<Data>(context, listen: false).newRandom();
+            Provider.of<StateManager>(context, listen: false).newRandom();
           },
           tooltip: 'New random number',
           child: const Icon(Icons.casino),
@@ -212,23 +256,23 @@ class _MainPageState extends State<MainPage> {
       title: 'Random Numbers',
       theme: ThemeData(
         cardColor: Colors.white,
-        primaryColor: Provider.of<Data>(context).appMainColor,
+        primaryColor: Provider.of<StateManager>(context).appMainColor,
         appBarTheme: AppBarTheme(
-          color: Provider.of<Data>(context).appMainColor,
+          color: Provider.of<StateManager>(context).appMainColor,
         ),
         backgroundColor: mainBgColor,
         scaffoldBackgroundColor: mainBgColor,
         dialogBackgroundColor: mainBgColor,
         iconTheme: const IconThemeData(size: 30.0, color: Colors.white),
         textTheme: const TextTheme(
+            headline5: TextStyle(color: Colors.white),
             headline4: TextStyle(color: Colors.white),
             bodyText1: TextStyle(color: Colors.white, fontSize: 16),
-            bodyText2: TextStyle(
-              color: Colors.white,
-            )),
+            bodyText2: TextStyle(color: Colors.white)),
+        errorColor: Colors.red,
         inputDecorationTheme: InputDecorationTheme(
-          focusColor: Provider.of<Data>(context).appMainColor,
-          hoverColor: Provider.of<Data>(context).appMainColor,
+          focusColor: Provider.of<StateManager>(context).appMainColor,
+          hoverColor: Provider.of<StateManager>(context).appMainColor,
         ),
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),

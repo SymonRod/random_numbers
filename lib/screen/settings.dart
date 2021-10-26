@@ -3,7 +3,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:random_numbers/models/data.dart';
+import 'package:random_numbers/models/statemanager.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
@@ -18,10 +18,10 @@ class _SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    minValueController.text = Provider.of<Data>(context).min.toString();
-    maxValueController.text = Provider.of<Data>(context).max.toString();
+    minValueController.text = Provider.of<StateManager>(context).min.toString();
+    maxValueController.text = Provider.of<StateManager>(context).max.toString();
 
-    var currentColor = Provider.of<Data>(context).appMainColor;
+    var currentColor = Provider.of<StateManager>(context).appMainColor;
 
     return SafeArea(
       child: Scaffold(
@@ -57,8 +57,9 @@ class _SettingsState extends State<Settings> {
                             keyboardType: TextInputType.number,
                             onSubmitted: (value) {
                               if (value != "") {
-                                Provider.of<Data>(context, listen: false).min =
-                                    int.parse(value);
+                                Provider.of<StateManager>(context,
+                                        listen: false)
+                                    .min = int.parse(value);
                               }
                             },
                           ),
@@ -80,8 +81,9 @@ class _SettingsState extends State<Settings> {
                             keyboardType: TextInputType.number,
                             onSubmitted: (value) {
                               if (value != "") {
-                                Provider.of<Data>(context, listen: false).max =
-                                    int.parse(value);
+                                Provider.of<StateManager>(context,
+                                        listen: false)
+                                    .max = int.parse(value);
                               }
                             },
                           ),
@@ -95,8 +97,7 @@ class _SettingsState extends State<Settings> {
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                     ),
-                    RaisedButton(
-                      elevation: 3.0,
+                    ElevatedButton(
                       onPressed: () {
                         showDialog(
                           context: context,
@@ -109,7 +110,8 @@ class _SettingsState extends State<Settings> {
                                 child: MaterialPicker(
                                   pickerColor: currentColor,
                                   onColorChanged: (newColor) {
-                                    Provider.of<Data>(context, listen: false)
+                                    Provider.of<StateManager>(context,
+                                            listen: false)
                                         .appMainColor = newColor;
                                   },
                                 ),
@@ -119,10 +121,6 @@ class _SettingsState extends State<Settings> {
                         );
                       },
                       child: const Text('Change me'),
-                      color: currentColor,
-                      textColor: useWhiteForeground(currentColor)
-                          ? const Color(0xffffffff)
-                          : const Color(0xff000000),
                     ),
                   ],
                 ),
