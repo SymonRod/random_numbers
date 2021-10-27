@@ -120,15 +120,16 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Expanded(
-                flex: 2,
+                flex: 3,
                 child: Container(
                   height: 200,
                   decoration: BoxDecoration(
-                      color: currentColor,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                      )),
+                    color: currentColor,
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
+                    ),
+                  ),
                   width: MediaQuery.of(context).size.width,
                   child: Column(
                     children: [
@@ -188,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               Expanded(
-                flex: 7,
+                flex: 6,
                 child: Container(child:
                     Consumer<StateManager>(builder: (context, data, child) {
                   List<Widget> radomNumers = [];

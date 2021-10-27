@@ -15,14 +15,15 @@ class Data {
   bool noNumberLeft;
   List<int> allNumbers;
 
-  Data(
-      {required this.min,
-      required this.max,
-      required this.currentNumber,
-      required this.hexColor,
-      required this.norepeat,
-      required this.noNumberLeft,
-      required this.allNumbers});
+  Data({
+    this.min = 10,
+    this.max = 100,
+    this.currentNumber = 1,
+    this.hexColor = "#fffff",
+    this.norepeat = true,
+    this.noNumberLeft = false,
+    this.allNumbers = const [1],
+  });
 
   factory Data.fromJson(Map<String, dynamic> data) => _$DataFromJson(data);
 

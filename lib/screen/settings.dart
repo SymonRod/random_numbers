@@ -121,6 +121,10 @@ class _SettingsState extends State<Settings> {
                         );
                       },
                       child: const Text('Change me'),
+                      style: ElevatedButton.styleFrom(
+                        primary:
+                            Provider.of<StateManager>(context).appMainColor,
+                      ),
                     ),
                   ],
                 ),

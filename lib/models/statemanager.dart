@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:math';
 
@@ -25,23 +26,26 @@ extension HexColor on Color {
 }
 
 class StateManager with ChangeNotifier {
-  String saveFile = "assets/data.json";
+  String saveFile = "";
   Color _appMainColor = Colors.red;
   final Random _random = Random();
+  var directory;
+  Data userData = Data();
 
-  late Data userData;
+  void _init() async {
+    directory = await getApplicationDocumentsDirectory();
+    saveFile = '${directory.path}/data.json';
 
-  StateManager() {
-    new File(saveFile).createSync(recursive: true);
+    var file = await File(saveFile).create(recursive: true);
 
-    var file = File("data/data.json");
     var content = file.readAsStringSync();
+    Data tempData;
     try {
       var jsonData = json.decode(content);
-      userData = Data.fromJson(jsonData);
-      _appMainColor = HexColor.fromHex(userData.hexColor);
+      tempData = Data.fromJson(jsonData);
+      _appMainColor = HexColor.fromHex(tempData.hexColor);
     } catch (e) {
-      userData = Data(
+      tempData = Data(
           min: 0,
           max: 100,
           currentNumber: 0,
@@ -50,10 +54,16 @@ class StateManager with ChangeNotifier {
           noNumberLeft: false,
           allNumbers: []);
     }
+    userData = tempData;
+    notifyListeners();
   }
 
-  void save() {
-    var file = File("data/data.json");
+  StateManager() {
+    _init();
+  }
+
+  void save() async {
+    var file = File(saveFile);
     var color = _appMainColor.toHex();
     userData.hexColor = color;
     file.writeAsString(json.encode(userData.toJson()));
@@ -62,7 +72,7 @@ class StateManager with ChangeNotifier {
   void newRandom() {
     var pool = userData.max - userData.min;
 
-    if (userData.allNumbers.length + 1 == pool && userData.norepeat) {
+    if (userData.allNumbers.length + 1 >= pool && userData.norepeat) {
       userData.noNumberLeft = true;
       notifyListeners();
       return;
