@@ -1,12 +1,11 @@
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:math';
-
 import 'package:random_numbers/models/data.dart';
+import 'package:random_numbers/models/quotes.dart';
 
 extension HexColor on Color {
   /// String is in the format "aabbcc" or "ffaabbcc" with an optional leading "#".
@@ -30,7 +29,7 @@ class StateManager with ChangeNotifier {
   Color _appMainColor = Colors.red;
   final Random _random = Random();
   var directory;
-  Data userData = Data();
+  Data userData = Data(quotes: Quotes());
 
   void _init() async {
     directory = await getApplicationDocumentsDirectory();
@@ -52,7 +51,8 @@ class StateManager with ChangeNotifier {
           hexColor: "#2ACAEA",
           norepeat: false,
           noNumberLeft: false,
-          allNumbers: []);
+          allNumbers: [],
+          quotes: Quotes());
     }
     userData = tempData;
     notifyListeners();

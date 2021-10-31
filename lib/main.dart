@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:random_numbers/models/statemanager.dart';
+import 'package:random_numbers/screen/personalized_quotes.dart';
 import 'package:random_numbers/screen/settings.dart';
 
 void main() {
@@ -32,6 +34,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     var currentColor = Provider.of<StateManager>(context).appMainColor;
+
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: currentColor, // navigation bar color
+      statusBarColor: Colors.transparent, // status bar color
+    ));
 
     _dismissDialog() {
       Navigator.pop(context);
@@ -77,165 +84,175 @@ class _MyHomePageState extends State<MyHomePage> {
           });
     }
 
-    return SafeArea(
-      child: Scaffold(
-        drawer: Drawer(
-          child: Container(
-            color: Theme.of(context).backgroundColor,
-            child: Column(children: [
-              DrawerHeader(
+    return Scaffold(
+      drawer: Drawer(
+        child: Container(
+          color: Theme.of(context).backgroundColor,
+          child: Column(children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+              ),
+              child: Container(),
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.push(
+                    (context),
+                    new MaterialPageRoute(
+                        builder: (ctxt) => new PersonalizedQuotes()));
+              },
+              leading: GestureDetector(
+                child: Icon(
+                  Icons.list,
+                  color: Theme.of(context).cardColor,
+                ),
+              ),
+              title: Text(
+                "Personalized quotes",
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.push((context),
+                    new MaterialPageRoute(builder: (ctxt) => new Settings()));
+              },
+              leading: GestureDetector(
+                child: Icon(
+                  Icons.settings,
+                  color: Theme.of(context).cardColor,
+                ),
+              ),
+              title: Text(
+                "Impostazioni",
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+            ),
+          ]),
+        ),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+              flex: 2,
+              child: Container(
+                padding: EdgeInsets.only(top: 40),
+                height: 150,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                ),
-                child: Container(),
-              ),
-              ListTile(
-                onTap: () {
-                  Navigator.push((context),
-                      new MaterialPageRoute(builder: (ctxt) => new Settings()));
-                },
-                leading: GestureDetector(
-                  child: Icon(
-                    Icons.settings,
-                    color: Theme.of(context).cardColor,
+                  color: currentColor,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
                   ),
                 ),
-                title: Text(
-                  "Impostazioni",
-                  style: Theme.of(context).textTheme.bodyText1,
-                ),
-              )
-            ]),
-          ),
-        ),
-        appBar: AppBar(
-          title: Row(
-              // ignore: prefer_const_literals_to_create_immutables
-              ),
-          backgroundColor: currentColor,
-          elevation: 0,
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Expanded(
-                flex: 3,
-                child: Container(
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: currentColor,
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(20),
-                      bottomRight: Radius.circular(20),
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  children: [
+                    Center(
+                      child: Consumer<StateManager>(
+                        builder: (context, data, child) {
+                          return Text(
+                            data.currentNumber.toString(),
+                            style: Theme.of(context).textTheme.headline4,
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                  width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    children: [
-                      Center(
-                        child: Consumer<StateManager>(
-                          builder: (context, data, child) {
-                            return Text(
-                              data.currentNumber.toString(),
-                              style: Theme.of(context).textTheme.headline4,
-                            );
-                          },
-                        ),
-                      ),
-                      Container(
-                        width: 200,
-                        child: Center(
-                          child: CheckboxListTile(
-                            title: Text(
-                              "Do not repeat",
-                              style: Theme.of(context).textTheme.bodyText1,
-                            ),
-                            controlAffinity: ListTileControlAffinity.leading,
-                            checkColor:
-                                Provider.of<StateManager>(context).appMainColor,
-                            activeColor: Colors.white,
-                            onChanged: (value) {
-                              Provider.of<StateManager>(
-                                context,
-                                listen: false,
-                              ).norepeat = value!;
-                            },
-                            value: Provider.of<StateManager>(context).norepeat,
+                    Container(
+                      width: 200,
+                      child: Center(
+                        child: CheckboxListTile(
+                          title: Text(
+                            "Do not repeat",
+                            style: Theme.of(context).textTheme.bodyText1,
                           ),
-                        ),
-                      ),
-                      Container(
-                        child: Center(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.white,
-                              shadowColor: Colors.black,
-                              enableFeedback: true,
-                            ),
-                            onPressed: Provider.of<StateManager>(
+                          controlAffinity: ListTileControlAffinity.leading,
+                          checkColor:
+                              Provider.of<StateManager>(context).appMainColor,
+                          activeColor: Colors.white,
+                          onChanged: (value) {
+                            Provider.of<StateManager>(
                               context,
                               listen: false,
-                            ).resetNumbers,
-                            child: Text(
-                              "Reset Numbers",
-                              style: TextStyle(color: Colors.black),
-                            ),
+                            ).norepeat = value!;
+                          },
+                          value: Provider.of<StateManager>(context).norepeat,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      child: Center(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.white,
+                            shadowColor: Colors.black,
+                            enableFeedback: true,
+                          ),
+                          onPressed: Provider.of<StateManager>(
+                            context,
+                            listen: false,
+                          ).resetNumbers,
+                          child: Text(
+                            "Reset Numbers",
+                            style: TextStyle(color: Colors.black),
                           ),
                         ),
-                      )
-                    ],
-                  ),
+                      ),
+                    )
+                  ],
                 ),
               ),
-              Expanded(
-                flex: 6,
-                child: Container(child:
-                    Consumer<StateManager>(builder: (context, data, child) {
-                  List<Widget> radomNumers = [];
+            ),
+            Expanded(
+              flex: 6,
+              child: Container(child:
+                  Consumer<StateManager>(builder: (context, data, child) {
+                List<Widget> radomNumers = [];
 
-                  for (int number in data.allNumbers.reversed) {
-                    radomNumers.add(Card(
-                      color: data.appMainColor,
-                      elevation: 10,
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(color: Colors.white70, width: 1),
-                        borderRadius: BorderRadius.circular(30),
+                for (int number in data.allNumbers.reversed) {
+                  radomNumers.add(Card(
+                    color: data.appMainColor,
+                    elevation: 10,
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(color: Colors.white70, width: 1),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Container(
+                      padding: EdgeInsets.all(20),
+                      child: Text(
+                        number.toString(),
+                        style: Theme.of(context).textTheme.bodyText1,
                       ),
-                      child: Container(
-                        padding: EdgeInsets.all(20),
-                        child: Text(
-                          number.toString(),
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                      ),
-                    ));
-                  }
+                    ),
+                  ));
+                }
 
-                  return ListView(children: radomNumers);
-                })),
-              ),
-              Consumer<StateManager>(
-                builder: (context, data, child) {
-                  if (data.noNumberLeft) {
-                    Future.delayed(Duration.zero, () async {
-                      _showMaterialDialog();
-                    });
-                  }
-                  return Container();
-                },
-              ),
-            ],
-          ),
+                return ListView(children: radomNumers);
+              })),
+            ),
+            Consumer<StateManager>(
+              builder: (context, data, child) {
+                if (data.noNumberLeft) {
+                  Future.delayed(Duration.zero, () async {
+                    _showMaterialDialog();
+                  });
+                }
+                return Container();
+              },
+            ),
+          ],
         ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: currentColor,
-          onPressed: () {
-            Provider.of<StateManager>(context, listen: false).newRandom();
-          },
-          tooltip: 'New random number',
-          child: const Icon(Icons.casino),
-        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: currentColor,
+        onPressed: () {
+          Provider.of<StateManager>(context, listen: false).newRandom();
+        },
+        tooltip: 'New random number',
+        child: const Icon(Icons.casino),
       ),
     );
   }
