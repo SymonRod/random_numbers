@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:random_numbers/models/statemanager.dart';
-import 'package:random_numbers/screen/personal_list.dart';
+import 'package:random_numbers/screen/personalized_quotes.dart';
 import 'package:random_numbers/screen/settings.dart';
 
 void main() {
@@ -33,6 +34,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     var currentColor = Provider.of<StateManager>(context).appMainColor;
+
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: currentColor, // navigation bar color
+      statusBarColor: Colors.transparent, // status bar color
+    ));
 
     _dismissDialog() {
       Navigator.pop(context);
@@ -259,6 +265,14 @@ class _MyHomePageState extends State<MyHomePage> {
           tooltip: 'New random number',
           child: const Icon(Icons.casino),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: currentColor,
+        onPressed: () {
+          Provider.of<StateManager>(context, listen: false).newRandom();
+        },
+        tooltip: 'New random number',
+        child: const Icon(Icons.casino),
       ),
     );
   }

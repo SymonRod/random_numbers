@@ -17,6 +17,7 @@ Data _$DataFromJson(Map<String, dynamic> json) => Data(
               ?.map((e) => e as int)
               .toList() ??
           const [1],
+      quotes: Quotes.fromJson(json['quotes'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{
@@ -27,4 +28,5 @@ Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{
       'norepeat': instance.norepeat,
       'noNumberLeft': instance.noNumberLeft,
       'allNumbers': instance.allNumbers,
+      'quotes': instance.quotes,
     };

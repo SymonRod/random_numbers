@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:random_numbers/models/data.dart';
+import 'package:random_numbers/models/quotes.dart';
 
 extension HexColor on Color {
   /// String is in the format "aabbcc" or "ffaabbcc" with an optional leading "#".
@@ -29,7 +30,7 @@ class StateManager with ChangeNotifier {
   Color _appMainColor = Colors.red;
   final Random _random = Random();
   var directory;
-  Data userData = Data();
+  Data userData = Data(quotes: Quotes());
 
   Future<String?> _getId() async {
     var deviceInfo = DeviceInfoPlugin();
@@ -67,7 +68,8 @@ class StateManager with ChangeNotifier {
           hexColor: "#2ACAEA",
           norepeat: false,
           noNumberLeft: false,
-          allNumbers: []);
+          allNumbers: [],
+          quotes: Quotes());
     }
     userData = tempData;
     notifyListeners();
