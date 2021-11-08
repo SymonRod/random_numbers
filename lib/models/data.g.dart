@@ -7,14 +7,16 @@ part of 'data.dart';
 // **************************************************************************
 
 Data _$DataFromJson(Map<String, dynamic> json) => Data(
-      min: json['min'] as int,
-      max: json['max'] as int,
-      currentNumber: json['currentNumber'] as int,
-      hexColor: json['hexColor'] as String,
-      norepeat: json['norepeat'] as bool,
-      noNumberLeft: json['noNumberLeft'] as bool,
-      allNumbers:
-          (json['allNumbers'] as List<dynamic>).map((e) => e as int).toList(),
+      min: json['min'] as int? ?? 10,
+      max: json['max'] as int? ?? 100,
+      currentNumber: json['currentNumber'] as int? ?? 1,
+      hexColor: json['hexColor'] as String? ?? "#fffff",
+      norepeat: json['norepeat'] as bool? ?? true,
+      noNumberLeft: json['noNumberLeft'] as bool? ?? false,
+      allNumbers: (json['allNumbers'] as List<dynamic>?)
+              ?.map((e) => e as int)
+              .toList() ??
+          const [1],
     );
 
 Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{

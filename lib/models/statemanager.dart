@@ -1,11 +1,10 @@
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:math';
-
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:random_numbers/models/data.dart';
 
 extension HexColor on Color {
@@ -32,10 +31,26 @@ class StateManager with ChangeNotifier {
   var directory;
   Data userData = Data();
 
+  Future<String?> _getId() async {
+    var deviceInfo = DeviceInfoPlugin();
+    if (Platform.isIOS) {
+      var iosDeviceInfo = await deviceInfo.iosInfo;
+      return iosDeviceInfo.identifierForVendor; // unique ID on iOS
+    } else if (Platform.isAndroid) {
+      var androidDeviceInfo = await deviceInfo.androidInfo;
+      return androidDeviceInfo.androidId; // unique ID on Android
+    } else if (kIsWeb) {
+      var webInfo = await deviceInfo.webBrowserInfo;
+      return (webInfo.vendor! +
+          webInfo.userAgent! +
+          webInfo.hardwareConcurrency.toString());
+    }
+  }
+
   void _init() async {
     directory = await getApplicationDocumentsDirectory();
     saveFile = '${directory.path}/data.json';
-
+    var unique_id = await _getId();
     var file = await File(saveFile).create(recursive: true);
 
     var content = file.readAsStringSync();
