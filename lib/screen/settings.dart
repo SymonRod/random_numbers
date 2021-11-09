@@ -55,6 +55,10 @@ class _SettingsState extends State<Settings> {
                             style: Theme.of(context).textTheme.bodyText1,
                             controller: minValueController,
                             keyboardType: TextInputType.number,
+                            onEditingComplete: () {
+                              Provider.of<StateManager>(context, listen: false)
+                                  .min = int.parse(minValueController.text);
+                            },
                             onSubmitted: (value) {
                               if (value != "") {
                                 Provider.of<StateManager>(context,
@@ -85,6 +89,10 @@ class _SettingsState extends State<Settings> {
                                         listen: false)
                                     .max = int.parse(value);
                               }
+                            },
+                            onEditingComplete: () {
+                              Provider.of<StateManager>(context, listen: false)
+                                  .min = int.parse(maxValueController.text);
                             },
                           ),
                         ),

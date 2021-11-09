@@ -7,6 +7,8 @@ import 'dart:math';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:random_numbers/models/data.dart';
 import 'package:random_numbers/models/quotes.dart';
+import 'package:http/http.dart' as http;
+import 'package:universal_platform/universal_platform.dart';
 
 extension HexColor on Color {
   /// String is in the format "aabbcc" or "ffaabbcc" with an optional leading "#".
@@ -30,48 +32,62 @@ class StateManager with ChangeNotifier {
   Color _appMainColor = Colors.red;
   final Random _random = Random();
   var directory;
-  Data userData = Data(quotes: Quotes());
+  Data userData = Data(allNumbers: []);
 
   Future<String?> _getId() async {
     var deviceInfo = DeviceInfoPlugin();
-    if (Platform.isIOS) {
-      var iosDeviceInfo = await deviceInfo.iosInfo;
-      return iosDeviceInfo.identifierForVendor; // unique ID on iOS
-    } else if (Platform.isAndroid) {
-      var androidDeviceInfo = await deviceInfo.androidInfo;
-      return androidDeviceInfo.androidId; // unique ID on Android
-    } else if (kIsWeb) {
+
+    if (UniversalPlatform.isWeb) {
       var webInfo = await deviceInfo.webBrowserInfo;
       return (webInfo.vendor! +
           webInfo.userAgent! +
           webInfo.hardwareConcurrency.toString());
     }
+
+    // if (Platform.isIOS) {
+    //   var iosDeviceInfo = await deviceInfo.iosInfo;
+    //   return iosDeviceInfo.identifierForVendor; // unique ID on iOS
+    // } else if (Platform.isAndroid) {
+    //   var androidDeviceInfo = await deviceInfo.androidInfo;
+    //   return androidDeviceInfo.androidId; // unique ID on Android
+    // }
   }
 
   void _init() async {
-    directory = await getApplicationDocumentsDirectory();
-    saveFile = '${directory.path}/data.json';
+    // directory = await getApplicationDocumentsDirectory();
+    // saveFile = '${directory.path}/data.json';
     var unique_id = await _getId();
-    var file = await File(saveFile).create(recursive: true);
+    //var file = await File(saveFile).create(recursive: true);
 
-    var content = file.readAsStringSync();
-    Data tempData;
-    try {
-      var jsonData = json.decode(content);
-      tempData = Data.fromJson(jsonData);
-      _appMainColor = HexColor.fromHex(tempData.hexColor);
-    } catch (e) {
-      tempData = Data(
-          min: 0,
-          max: 100,
-          currentNumber: 0,
-          hexColor: "#2ACAEA",
-          norepeat: false,
-          noNumberLeft: false,
-          allNumbers: [],
-          quotes: Quotes());
+    var url = Uri.parse(
+        'https://randomnumbers.serod.tech/retrive?uuid=' + unique_id!);
+    http.Response response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      print("Saved");
+    } else {
+      print("Error");
     }
-    userData = tempData;
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      userData = Data.fromJson(jsonData);
+      _appMainColor = HexColor.fromHex(userData.hexColor);
+    }
+
+    if (response.statusCode != 200) {
+      userData = Data(
+        uuid: unique_id,
+        min: 0,
+        max: 100,
+        currentNumber: 0,
+        hexColor: "#2ACAEA",
+        norepeat: false,
+        noNumberLeft: false,
+        allNumbers: [],
+      );
+    }
+
     notifyListeners();
   }
 
@@ -80,10 +96,23 @@ class StateManager with ChangeNotifier {
   }
 
   void save() async {
-    var file = File(saveFile);
     var color = _appMainColor.toHex();
     userData.hexColor = color;
-    file.writeAsString(json.encode(userData.toJson()));
+    String? unique_id = await _getId();
+    userData.uuid = unique_id!;
+    var body = jsonEncode(userData);
+
+    var url = Uri.parse('https://randomnumbers.serod.tech/add');
+    http.Response response = await http.post(url,
+        headers: {"Content-Type": "application/json"}, body: body);
+    if (response.statusCode == 200) {
+      print("Saved");
+    } else {
+      print("Error");
+    }
+
+    // var file = File(saveFile);
+    // file.writeAsString(json.encode(userData.toJson()));
   }
 
   void newRandom() {

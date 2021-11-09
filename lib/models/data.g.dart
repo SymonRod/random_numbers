@@ -7,6 +7,7 @@ part of 'data.dart';
 // **************************************************************************
 
 Data _$DataFromJson(Map<String, dynamic> json) => Data(
+      uuid: json['uuid'] as String? ?? "ffffffffffff",
       min: json['min'] as int? ?? 10,
       max: json['max'] as int? ?? 100,
       currentNumber: json['currentNumber'] as int? ?? 1,
@@ -17,10 +18,10 @@ Data _$DataFromJson(Map<String, dynamic> json) => Data(
               ?.map((e) => e as int)
               .toList() ??
           const [1],
-      quotes: Quotes.fromJson(json['quotes'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{
+      'uuid': instance.uuid,
       'min': instance.min,
       'max': instance.max,
       'currentNumber': instance.currentNumber,
@@ -28,5 +29,4 @@ Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{
       'norepeat': instance.norepeat,
       'noNumberLeft': instance.noNumberLeft,
       'allNumbers': instance.allNumbers,
-      'quotes': instance.quotes,
     };

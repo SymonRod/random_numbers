@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:random_numbers/models/statemanager.dart';
+import 'package:random_numbers/screen/personal_list.dart';
 import 'package:random_numbers/screen/personalized_quotes.dart';
 import 'package:random_numbers/screen/settings.dart';
 
@@ -144,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Expanded(
-                    flex: 2,
+                    flex: 3,
                     child: Container(
                       padding: EdgeInsets.only(top: 30),
                       decoration: BoxDecoration(
@@ -265,14 +266,6 @@ class _MyHomePageState extends State<MyHomePage> {
           tooltip: 'New random number',
           child: const Icon(Icons.casino),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: currentColor,
-        onPressed: () {
-          Provider.of<StateManager>(context, listen: false).newRandom();
-        },
-        tooltip: 'New random number',
-        child: const Icon(Icons.casino),
       ),
     );
   }
