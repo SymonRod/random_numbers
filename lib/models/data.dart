@@ -7,6 +7,7 @@ part 'data.g.dart';
 
 @JsonSerializable()
 class Data {
+  String uuid;
   int min;
   int max;
   int currentNumber;
@@ -15,17 +16,16 @@ class Data {
   bool norepeat;
   bool noNumberLeft;
   List<int> allNumbers;
-  Quotes quotes = Quotes();
 
   Data({
+    this.uuid = "ffffffffffff",
     this.min = 10,
     this.max = 100,
     this.currentNumber = 1,
     this.hexColor = "#fffff",
     this.norepeat = true,
     this.noNumberLeft = false,
-    this.allNumbers = const [1],
-    required this.quotes,
+    required this.allNumbers,
   });
 
   factory Data.fromJson(Map<String, dynamic> data) => _$DataFromJson(data);
